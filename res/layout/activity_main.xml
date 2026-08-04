@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
+    android:orientation="vertical"
+    android:padding="20px"
+    android:gravity="center">
+
+    <!--Who's Turn it is-->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player 1's Turn!"
+        android:textColor="#fb2e01"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp" />
+
+    <!--Standard Connect4 Board 6R x 7C-->
+    <GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alignmentMode="alignMargins"
+        android:columnCount="7"
+        android:rowCount="6"
+        android:background="#d8d8d8"
+        android:padding="25dp">
+
+    </GridLayout>
+
+
+</LinearLayout>
