@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 
 // 
 enum class ChipColor{ EMPTY, RED, YELLOW }
+enum class GameMode{ONE_PLAYER, TWO_PLAYER}
 
 @Composable
 fun GameScreen(
@@ -132,7 +133,7 @@ fun GameStatusHeader(
             if(winner != null) {
                 Text(
                     text = "${if (winner == ChipColor.RED) "RED" else "YELLOW"} WINS!",
-                    fontSize = 22.dp,
+                    fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = if(winner == ChipColor.RED) Color(0xFFEF4444) else Color(0xFFEAB308)
                 )
