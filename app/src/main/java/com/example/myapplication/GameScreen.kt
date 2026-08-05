@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,7 +21,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.foundation.clickable
 // game UI section
 @Composable
 fun GameScreen(
@@ -31,39 +36,22 @@ fun GameScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFF0F172A))
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         // game title
-        Text(
-            text = "Connect Four",
-            fontSize = 30.sp
-        )
-        // use spacer() to add space between two elements
-        Spacer(
-            modifier = Modifier.padding(8.dp)
-        )
-        // let player know whose turn currently
-        Text(
-            text = viewModel.message,
-            fontSize = 20.sp
-        )
-
-        Spacer(
-            modifier = Modifier.padding(8.dp)
+        GameStatusHeader(
+            message = viewModel.message
         )
         // create game buttons to let player drop cell to the column
-        ColumnButtons(
-            gameState = viewModel.gameState, // check game state to determine if the button is clickable
-            onColumnClick = viewModel::playColumn // modify the viewmodel that the player selected this column
-        )
 
-        Spacer(
-            modifier = Modifier.padding(8.dp)
-        )
 
         GameBoard(
-            board = viewModel.board
+            board = viewModel.board,
+            gameState = viewModel.gameState,
+            onColumnClick = viewModel::playColumn
         )
 
         Spacer(
@@ -79,52 +67,85 @@ fun GameScreen(
 }
 
 @Composable
-private fun ColumnButtons(
-    gameState: GameState,
-    onColumnClick: (Int) -> Unit // pass in column number
+private fun GameStatusHeader(
+    message: String
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(2.dp)
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(16.dp)
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1E293B)
+        ),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        // use repeat() function to create 7 buttons
-        repeat(7) { column ->
-            OutlinedButton(
-                modifier = Modifier.weight(1f),
-                enabled = gameState == GameState.PLAYING,
-                onClick = {
-                    onColumnClick(column)
-                }
-            ) {
-                Text(
-                    text = "${column + 1}", // button's number start at 1
-                    fontSize = 12.sp
-                )
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Connect Four",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+
+            Text(
+                text = message,
+                fontSize = 20.sp,
+                color = Color.White
+            )
         }
     }
 }
 
+
 @Composable
 private fun GameBoard(
-    board: Array<Array<Piece>>
+    board: Array<Array<Piece>>,
+    gameState: GameState,
+    onColumnClick: (Int) -> Unit
 ) {
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Blue)
-            .padding(4.dp),
-        verticalArrangement = Arrangement.spacedBy(3.dp)
+            .shadow(
+                elevation = 12.dp,
+                shape = RoundedCornerShape(20.dp)
+            )
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF2563EB),
+                        Color(0xFF1D4ED8)
+                    )
+                ),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .padding(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        board.forEach { row -> // means each row in the board(will be 6 in total)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(3.dp)
+        for (column in 0 until 7) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable(
+                        enabled = gameState == GameState.PLAYING
+                    ) {
+                        onColumnClick(column)
+                    },
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                row.forEach { piece -> // means each piece in every row( will be 7 in total)
+                for (row in 0 until 6) {
                     BoardCell(
-                        modifier = Modifier.weight(1f),
-                        piece = piece
+                        modifier = Modifier.fillMaxWidth(),
+                        piece = board[row][column]
                     )
                 }
             }
@@ -138,9 +159,15 @@ private fun BoardCell(
     modifier: Modifier = Modifier
 ) {
     val cellColor = when (piece) {
-        Piece.EMPTY -> Color.White
-        Piece.RED -> Color.Red
-        Piece.YELLOW -> Color.Yellow
+        Piece.EMPTY -> Color(0xFF0F172A)
+        Piece.RED -> Color(0xFFEF4444)
+        Piece.YELLOW -> Color(0xFFEAB308)
+    }
+
+    val borderColor = if (piece == Piece.EMPTY) {
+        Color(0xFF334155)
+    } else {
+        Color.Transparent
     }
 
     Box(
@@ -149,8 +176,8 @@ private fun BoardCell(
             .clip(CircleShape)
             .background(cellColor)
             .border(
-                width = 1.dp,
-                color = Color.DarkGray,
+                width = 2.dp,
+                color = borderColor,
                 shape = CircleShape
             )
     )
