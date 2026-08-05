@@ -11,6 +11,7 @@ enum class GameState {
 
 // player class for store player information
 class Player(val name: String, val pieceColor: Piece) {
+    val color: Piece get() = pieceColor
     fun playerInfo() {
         println("player information: \nname: $name \npieceColor: $pieceColor \n")
     }
